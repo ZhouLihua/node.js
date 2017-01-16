@@ -61,7 +61,18 @@ app.use('/signup', require('./routes/signup'));
 app.use('/signin', require('./routes/signin'));
 app.use('/signout', require('./routes/signout'));
 app.use('/posts', require('./routes/posts'));
+app.use(function(req, res){
+    if(!res.headersSent){
+        res.render('404');
+    }
+});
 
+// error page
+app.use(function(err, req, res, nex){
+    res.render('error',{
+        error: err
+    });
+});
 app.listen(config.port, function(){
     console.log('Express Sample listening on port ' + config.port);
 });

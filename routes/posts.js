@@ -14,8 +14,7 @@ router.get('/', function(req, res, next) {
         'author': author
     }, function(err, posts) {
         if (err) {
-            req.flash('error', '获取文章失败');
-            req.redirect('back');
+            next(err);
         } else {
             res.render('posts', {
                 posts: posts,
@@ -24,12 +23,12 @@ router.get('/', function(req, res, next) {
     });
 });
 
-// POST /posts 发表一篇文章
-router.post('/', checkLogin, function(req, res, next) {
-    var author = req.session.user._id;
+// POST /posts/create 发表一篇文章
+router.post('/create', checkLogin, function(req, res, next) {
+    var author = req.session.user;
     var title = req.fields.title;
     var content = req.fields.content;
-
+    console.log(req.session);
     try {
         if (!title.length) {
             throw new Error('标题不能为空');
@@ -38,25 +37,23 @@ router.post('/', checkLogin, function(req, res, next) {
             throw new Error('请填写内容');
         }
     } catch (err) {
-        req.flash('error', err.message);
-        res.redirect('back');
+        next(err);
     }
     var post = new Post();
-    post.author = author;
+    post.author = author._id;
     post.title = title;
     post.content = content;
     post.pv = 0;
     post.save(function(err, result) {
         if (err) {
-            req.flash('error', '发表文章失败');
-            res.redirect('back');
+            next(err);
         } else {
             console.log(result);
             var id = result._id;
             req.flash('success', '发表文章成功');
-            res.redirect(`/posts/${_id}`);
+            res.redirect(`/posts/${id}`);
         }
-    })
+    });
 });
 
 // GET /posts/create 发表文章
@@ -67,15 +64,15 @@ router.get('/create', checkLogin, function(req, res, next) {
 // GET /posts/:postId 获取单独一篇文章
 router.get('/:postId', function(req, res, next) {
     var postId = req.params.postId;
-    Post.find({
+    Post.findOne({
         '_id': postId
     }, function(err, post) {
         if (err) {
-            req.flash('error', '文章不存在');
-            res.redirect('back');
-        } else{
-            req.flash('success', '获取文章成功'); res.render('post', {
-                'post': post
+            next(err);
+        } else {
+            req.flash('success', '获取文章成功');
+            res.render('post', {
+                post: post
             });
         }
     });
@@ -85,7 +82,7 @@ router.get('/:postId', function(req, res, next) {
 router.get('/:postId/edit', checkLogin, function(req, res, next) {
     var postId = req.params.postId;
     var author = req.session.user;
-    Post.find({
+    Post.findOne({
         '_id': postId
     }, function(err, post) {
         if (err || !post) {
@@ -131,7 +128,7 @@ router.get('/:postId/remove', checkLogin, function(req, res, next) {
         'author': author
     }, function(err) {
         if (err) {
-            next;
+            next(err);
         } else {
             req.flash('success', '删除文章成功');
             res.redirect('/posts');

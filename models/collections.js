@@ -13,13 +13,20 @@ var User = new Schema({
 
 User.index({name: 1}, {unique: true});
 
+// Comment Schema
+var Comment = new Schema({
+    comment: {type: String},
+    author: {type: String}
+});
+
 // Post Schema
 var Post = new Schema({
     author: {type: String},
     title: {type: String},
     content: {type: String},
     postTime:{type: Date, default: new Date()},
-    pv: {type: Number}
+    pv: {type: Number},
+    comments:[Comment]
 });
 // _id字段可以获取插入时间，也即是用户发布的时间，按时间降序排列
 Post.index({author: 1, _id: -1});
@@ -27,4 +34,5 @@ Post.index({author: 1, _id: -1});
 module.exports = function(){
     mongoose.model('User', User);
     mongoose.model('Post', Post);
+    mongoose.model('Comment', Comment);
 }

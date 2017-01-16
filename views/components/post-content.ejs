@@ -1,17 +1,19 @@
 <div class="post-content">
     <div class="ui grid">
         <div class="four wide column">
-            <a class="avatar" href="/posts?author=<%= post.author._id%>" data-title="<%= post.author.name %> | <%= ('m': '男', 'f': '女', 'x': '保密')[post.author.gender] %>" data-content="<%= post.user.bio %>">
-                <img class="avatar" src="/img/<%= post.author.avatar %>">
+            <a class="avatar" href="/posts?author=<%= post.author._id %>"
+                data-title="<%= post.author.name %> | ('m': '男', 'f': '女', 'x': '保密')[<%= post.author.gender %>]"
+                data-content="<%= post.author.bio %>">
             </a>
+                <img class="avatar" src="/img/<%= post.author.avatar %>">
         </div>
         <div class="eight wide column">
             <div class="ui segment">
                 <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
-                <pre><%- post.content %></pre>
+                <pre><%= post.content %></pre>
                 <div>
                     <span class="tag right">
-                <span>浏览(<%= post.pv %>)</span>
+                    <span>浏览(<%= post.pv %>)</span>
                     <span>留言(<%= post.comentsCount %>)</span>
                     <% if(user && post.author.id && user._id.toString() == post.author._id.toString() ){ %>
                         <div class="ui inline dropdown">
@@ -23,7 +25,7 @@
                             </div>
                         </div>
                         <% } %>
-                            </span>
+                    </span>
                 </div>
             </div>
         </div>

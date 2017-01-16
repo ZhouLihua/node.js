@@ -23,17 +23,17 @@ router.get('/', checkNotLogin, function(req, res, next){
     User.findOne({'name': name}, function(err, user){
         if(!user){
             req.flash('error', '用户名不存在');
-            res.redirect('back');
+            res.redirect('/signin');
         }
         if(user.password != password){
             req.flash('error', '用户名或者密码错误');
-            res.redirect('back');
+            res.redirect('/signin');
         }
 
         req.flash('success', '登陆成功');
         delete user.password;
         req.session.user = user;
-        res.redirect('/posts', {user: user});
+        res.redirect('/posts');
         // next();
     });
 });
